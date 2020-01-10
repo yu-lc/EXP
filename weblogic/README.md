@@ -1,1 +1,1 @@
-# 关于weblogic的所有exp脚本
+# 关于weblogic的漏洞复现及exp脚本
