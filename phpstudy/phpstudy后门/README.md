@@ -9,3 +9,4 @@ phpstudy 2018版php-5.4.45
 ## 漏洞复现
 bp抓包修改请求包的Accept-Encoding和Accept-Charset参数即可利用
 ## py代码执行结果
+![Image text](https://github.com/yu-lc/EXP/blob/master/phpstudy/phpstudy%E5%90%8E%E9%97%A8/1.png)
