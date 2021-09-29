@@ -181,9 +181,6 @@ def urlforfind(url):
 def mkdirfile(file):
     global file_name
     file = file.replace('.','_')
-    #linux_user = subprocess.getstatusoutput('whoami')
-    #linux_user = linux_user[1]
-    #print(linux_user)
     path = '/home/$USER'
     linux_user_re = subprocess.getstatusoutput('cd {}/桌面 && mkdir {}'.format(path,file))
     if linux_user_re[0] == 0:
