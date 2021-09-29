@@ -1,5 +1,6 @@
 import re
 import subprocess
+from sys import path
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import numpy as np
@@ -119,6 +120,9 @@ def findjs(new_url):
                                         getlist.append(tp)
                             else:
                                 tp = tp.replace('./','/')
+                                for i in error_l:
+                                    if tp[0] == i:
+                                        tp = tp[1:]
                                 if tp[-3:] != '.js':
                                     tp += hz
                                 getlist.append(tp)
@@ -152,13 +156,13 @@ def findjs(new_url):
             requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
             rs = requests.get(url,headers=headers,timeout=10,verify=False)
             if rs.status_code == 200:
-                for i in range(len(getlist)):
-                    getlist[i] = url + getlist[i]
+                for j in range(len(getlist)):
+                    getlist[j] = new_url[i] + getlist[j]
                 break
         #print(getlist)
         webpack(getlist)
     except Exception as e:
-        print('-------网站无法访问，已退出-------'+e)
+        print('-------网站无法访问，已退出-------',e)
 
 def urlforfind(url):
     #print(url)
@@ -177,18 +181,19 @@ def urlforfind(url):
 def mkdirfile(file):
     global file_name
     file = file.replace('.','_')
-    linux_user = subprocess.getstatusoutput('whoami')
-    linux_user = linux_user[1]
+    #linux_user = subprocess.getstatusoutput('whoami')
+    #linux_user = linux_user[1]
     #print(linux_user)
-    linux_user_re = subprocess.getstatusoutput('cd /home/{}/桌面 && mkdir {}'.format(linux_user,file))
+    path = '/home/$USER'
+    linux_user_re = subprocess.getstatusoutput('cd {}/桌面 && mkdir {}'.format(path,file))
     if linux_user_re[0] == 0:
-        file_name = 'cd /home/{}/桌面/{}'.format(linux_user,file)
+        file_name = 'cd {}/桌面/{}'.format(path,file)
     elif linux_user_re[0] == 1:
         if '文件已存在' in linux_user_re[1]:
-            file_name = 'cd /home/{}/桌面/{}'.format(linux_user,file)
+            file_name = 'cd {}/桌面/{}'.format(path,file)
         else:
             subprocess.getstatusoutput('cd /home/{}/Desktop && mkdir {}'.format(linux_user,file))
-            file_name = 'cd /home/{}/Desktop/{}'.format(linux_user,file)
+            file_name = 'cd {}/Desktop/{}'.format(path,file)
     else:
         print('文件创建失败')
 
