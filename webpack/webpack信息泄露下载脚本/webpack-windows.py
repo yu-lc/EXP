@@ -1,3 +1,4 @@
+# encoding=utf8
 import re
 import subprocess
 import requests
@@ -16,7 +17,7 @@ Created on 2021.9.26
 
 
 def webpack(getlist):
-    #try:
+    try:
         result_curl = []
         result_reverse_sourcemap = []
         error_cs = 0
@@ -62,8 +63,8 @@ def webpack(getlist):
                 print('result:---可能存在漏洞---存在{}个js源码，共解析出{}个js源码'.format(len(getlist),len(getlist)-error_cs))
             else:
                 print('result:---不存在漏洞---')
-    #except Exception as e:
-    #    print('程序出错',e)
+    except Exception as e:
+        print('程序出错',e)
 
 def findjs(new_url):
     headers = {
@@ -110,6 +111,8 @@ def findjs(new_url):
                                     else:
                                         tp = re.findall('(.*){}'.format(hz),tp1)
                                         tp = tp[0] + hz
+                                        if tp[0] == '/':
+                                            tp = tp[1:]
                                         for i in error_l:
                                             if tp[0] == i:
                                                 tp = tp[1:]
@@ -118,6 +121,9 @@ def findjs(new_url):
                                         getlist.append(tp)
                             else:
                                 tp = tp.replace('./','/')
+                                for i in error_l:
+                                    if tp[0] == '/':
+                                        tp = tp[1:]
                                 if tp[-3:] != '.js':
                                     tp += hz
                                 getlist.append(tp)
@@ -145,19 +151,22 @@ def findjs(new_url):
                                     getlist.append(tp)
                 else:
                     pass
+        #print(getlist)
         # 拼接正确的js地址
         for i in range(2,len(new_url)):
             url = new_url[i] + getlist[0]
+            #print(url)
             requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
             rs = requests.get(url,headers=headers,timeout=10,verify=False)
             if rs.status_code == 200:
-                for i in range(len(getlist)):
-                    getlist[i] = url + getlist[i]
+                for j in range(len(getlist)):
+                    getlist[j] = new_url[i] + getlist[j]
+                    #print(getlist[j])
                 break
         #print(getlist)
         webpack(getlist)
     except Exception as e:
-        print('-------网站无法访问，已退出-------'+e)
+        print('-------网站无法访问，已退出-------',e)
 
 def urlforfind(url):
     #print(url)
@@ -175,12 +184,9 @@ def urlforfind(url):
 
 def mkdirfile(file):
     file = file.replace('.','_')
-    windows_user = subprocess.getstatusoutput('whoami')
-    windows_user = windows_user[1].split('\\')[1]
-    #print(windows_user)
-    subprocess.getstatusoutput('cd C:/Users/{}/desktop && md {}'.format(windows_user,file))
+    subprocess.getstatusoutput('cd /d %userprofile%/desktop && md {}'.format(file))
     global file_name
-    file_name = 'cd C:/Users/{}/desktop/{}'.format(windows_user,file)
+    file_name = 'cd /d %userprofile%/desktop/{}'.format(file)
 
 # 验证是否安装reverse-sourcemap工具，若无就自动安装
 
